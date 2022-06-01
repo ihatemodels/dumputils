@@ -1,4 +1,4 @@
-package pgtool
+package postgres
 
 import (
 	"bytes"
@@ -17,23 +17,37 @@ import (
 )
 
 type Database struct {
-	Name         string
-	Host         string
-	Port         int
-	Database     string
-	Username     string
-	Password     string
-	Version      int
-	IsServer     bool
-	Verbose      bool
-	pgDumpBin    string
-	pgDumpAllBin string
+	Name     string
+	Host     string
+	Port     int
+	Database string
+	Username string
+	Password string
+	Version  int
+	IsServer bool
+	DumpAll  bool
+	Verbose  bool
+
+	connectionString string
+	pgDumpBin        string
+	pgDumpAllBin     string
 }
 
 const binPath = "/usr/lib/postgresql/%d/bin/%s"
 
+func (d *Database) buildConnectionString() {
+	d.connectionString = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s",
+		d.Host,
+		d.Port,
+		d.Username,
+		d.Password,
+		d.Database)
+}
+
 // Probe if the database is reachable and needed tools exist.
 func (d *Database) Probe() error {
+
+	d.buildConnectionString()
 
 	if d.IsServer {
 		d.pgDumpAllBin = fmt.Sprintf(binPath, d.Version, "pg_dumpall")
@@ -55,14 +69,7 @@ func (d *Database) Probe() error {
 		}
 	}
 
-	connection := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s",
-		d.Host,
-		d.Port,
-		d.Username,
-		d.Password,
-		d.Database)
-
-	db, err := sql.Open("postgres", connection)
+	db, err := sql.Open("postgres", d.connectionString)
 
 	if err != nil {
 		return eris.Wrapf(err, "can not open database connection to instance: %s - host: %s", d.Name, d.Host)
@@ -77,8 +84,46 @@ func (d *Database) Probe() error {
 	return nil
 }
 
+func (d *Database) Dump() error {
+
+	if err := d.Probe(); err != nil {
+		return eris.Wrapf(err, "failed to probe database with name %s and host %s", d.Name, d.Host)
+	}
+
+	if d.DumpAll {
+		db, err := sql.Open("postgres", d.connectionString)
+
+		if err != nil {
+			return eris.Wrapf(err, "can not open database connection to instance: %s - host: %s", d.Name, d.Host)
+		}
+
+		rows, err := db.Query("SELECT datname FROM pg_database;")
+
+		if err != nil {
+			return eris.Wrapf(err, "failed to get all databases in dumpAll mode for instance: %s", d.Name)
+		}
+
+		var databases []string
+
+		for rows.Next() {
+			var currentDatabase string
+			if err := rows.Scan(&currentDatabase); err != nil {
+				return eris.Wrapf(err, "failed to scan all databases in dumpAll mode for instance: %s", d.Name)
+			}
+			databases = append(databases, currentDatabase)
+		}
+
+		if err := rows.Err(); err != nil {
+			return eris.Wrapf(err, "failed to scan all databases in dumpAll mode for instance: %s", d.Name)
+		}
+		rows.Close()
+
+		log.Infof("%v", databases)
+	}
+	return nil
+}
+
 // PgDump executes pg_dump with maximum level of compression.
-// Returns pg_dump stdout+stderr and errors if pg_dump returns exit code != 0
 func (d *Database) PgDump() (string, error) {
 
 	fileName := fmt.Sprintf("%s-%s-%s.dump", d.Name, d.Database, time.Now().Format("2006-01-02-15-04-05-000000"))
@@ -112,5 +157,9 @@ func (d *Database) PgDump() (string, error) {
 }
 
 func (d *Database) PgDumpAll() error {
+	return nil
+}
+
+func (d *Database) PgDumpServer() error {
 	return nil
 }

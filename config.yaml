@@ -5,6 +5,7 @@ log:
   level: "info"
 
 databases:
+  # dump single database example
   - name: "sales-east"
     host: 192.168.1.3
     port: 5432
@@ -12,18 +13,36 @@ databases:
     username: postgres
     password: postgres
     version: 14
-    # enable this to print log messages
+    # enabling this will pass the -v flag to pg_dump
+    # all collected output will be printed as info log message
     verbose: true
+    dumpAll: false
+    dumpServer: false
 
+  # dump all database in separate dumps
   - name: "sales-reporting-west"
     host: 192.168.1.3
     port: 5432
-    database: sales_reporting
     username: postgres
     password: postgres
     version: 13
-    # enable this to print log messages
     verbose: true
+    # this will dump all databases in separate
+    # files using the pg_dump bin
+    dumpAll: true
+    dumpServer: false
+
+  # dump the whole server
+  - name: "sales-server-west"
+    host: 192.168.1.3
+    port: 5432
+    username: postgres
+    password: postgres
+    version: 11
+    verbose: true
+    dumpAll: false
+    # this will dump the whole server using pg_dumpall
+    dumpServer: true
 
 # configure where to store generated backup files
 output:

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"gopkg.in/dealancer/validate.v2"
 	"os"
 
@@ -10,6 +11,7 @@ import (
 
 var App *Settings
 
+// Init call's new on App ( the global Settings instance )
 func Init(filePath string) error {
 	var err error
 
@@ -22,6 +24,7 @@ func Init(filePath string) error {
 	return nil
 }
 
+// New returns validated Settings instance. Errors on file opening and configuration miss sense.
 func New(filePath string) (*Settings, error) {
 	if len(filePath) == 0 {
 		return nil, eris.New("internal/config: filePath is empty")
@@ -42,6 +45,20 @@ func New(filePath string) (*Settings, error) {
 	if err := validate.Validate(&out); err != nil {
 		return nil, eris.Wrap(err, "internal/config: the provided configuration is invalid")
 	}
+
+	for _, instance := range out.Databases {
+		if instance.DumpAll && instance.DumpServer {
+			return nil, eris.New(fmt.Sprintf("internal/config: dumpAll and dumpServer "+
+				"flags can not be used together in database name: %s", instance.Name))
+		}
+		if !instance.DumpAll && !instance.DumpServer {
+			if instance.Database == "" {
+				return nil, eris.New(fmt.Sprintf("internal/config: Database field can not "+
+					"be empty in single dump mode for instance: %s", instance.Name))
+			}
+		}
+	}
+
 	return out, nil
 }
 
@@ -52,24 +69,17 @@ type Settings struct {
 	} `yaml:"log"`
 
 	Databases []struct {
-		Host     string `yaml:"host" validate:"empty=false"`
-		Name     string `yaml:"name" validate:"empty=false"`
-		Port     int    `yaml:"port" validate:"ne=0"`
-		Database string `yaml:"database" validate:"empty=false"`
-		Username string `yaml:"username" validate:"empty=false"`
-		Password string `yaml:"password" validate:"empty=false"`
-		Version  int    `yaml:"version"  validate:"one_of=12,13,14"`
-		Verbose  bool   `yaml:"verbose"`
+		Host       string `yaml:"host" validate:"empty=false"`
+		Name       string `yaml:"name" validate:"empty=false"`
+		Port       int    `yaml:"port" validate:"ne=0"`
+		Database   string `yaml:"database"`
+		Username   string `yaml:"username" validate:"empty=false"`
+		Password   string `yaml:"password" validate:"empty=false"`
+		Version    int    `yaml:"version"  validate:"one_of=10,11,12,13,14"`
+		Verbose    bool   `yaml:"verbose"`
+		DumpAll    bool   `yaml:"dumpAll"`
+		DumpServer bool   `yaml:"dumpServer"`
 	} `yaml:"databases"`
-
-	Servers []struct {
-		Host     string `yaml:"host" validate:"empty=false"`
-		Name     string `yaml:"name" validate:"empty=false"`
-		Port     int    `yaml:"port" validate:"ne=0"`
-		Username string `yaml:"username" validate:"empty=false"`
-		Password string `yaml:"password" validate:"empty=false"`
-		Version  int    `yaml:"version"  validate:"one_of=12,13,14"`
-	} `yaml:"servers"`
 
 	Outputs struct {
 		Minio struct {
