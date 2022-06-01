@@ -1,0 +1,22 @@
+# github.com/leodido/go-urn v1.1.0
+## explicit
+github.com/leodido/go-urn
+# github.com/lib/pq v1.10.6
+## explicit; go 1.13
+github.com/lib/pq
+github.com/lib/pq/oid
+github.com/lib/pq/scram
+# github.com/rotisserie/eris v0.5.4
+## explicit; go 1.18
+github.com/rotisserie/eris
+# github.com/rs/zerolog v1.26.1
+## explicit; go 1.15
+github.com/rs/zerolog
+github.com/rs/zerolog/internal/cbor
+github.com/rs/zerolog/internal/json
+# gopkg.in/dealancer/validate.v2 v2.1.0
+## explicit; go 1.11
+gopkg.in/dealancer/validate.v2
+# gopkg.in/yaml.v2 v2.4.0
+## explicit; go 1.15
+gopkg.in/yaml.v2

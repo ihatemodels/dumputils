@@ -1,0 +1,53 @@
+log:
+  # choices: json|human
+  type: human
+  # choices: debug|info|warn|error
+  level: "info"
+
+databases:
+  - name: "sales-east"
+    host: 192.168.1.3
+    port: 5432
+    database: sales
+    username: postgres
+    password: postgres
+    version: 14
+    # enable this to print log messages
+    verbose: true
+
+  - name: "sales-reporting-west"
+    host: 192.168.1.3
+    port: 5432
+    database: sales_reporting
+    username: postgres
+    password: postgres
+    version: 13
+    # enable this to print log messages
+    verbose: true
+
+# configure where to store generated backup files
+output:
+  minio:
+    enabled: true
+    endpoint: "minio.local"
+    accessKeyID: admin
+    bucketName: test
+    secretAccessKey: admin"
+  sftp:
+    enabled: true
+    host: ftp.local
+    port: 21
+    user: user
+    password: password
+    directory: /home/user/backups
+  filesystem:
+    enabled: true
+    # the user which starts pgtools must have write access
+    # to this destination
+    path: /opt/backups/
+
+notifiers:
+  email:
+    enabled: true
+  slack:
+    enabled: true
