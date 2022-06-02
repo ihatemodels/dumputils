@@ -1,11 +1,17 @@
-# github.com/leodido/go-urn v1.1.0
+# github.com/davecgh/go-spew v1.1.1
 ## explicit
+# github.com/kr/pretty v0.3.0
+## explicit; go 1.12
+# github.com/leodido/go-urn v1.2.1
+## explicit; go 1.13
 github.com/leodido/go-urn
 # github.com/lib/pq v1.10.6
 ## explicit; go 1.13
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
+# github.com/rogpeppe/go-internal v1.8.0
+## explicit; go 1.11
 # github.com/rotisserie/eris v0.5.4
 ## explicit; go 1.18
 github.com/rotisserie/eris
@@ -14,9 +20,15 @@ github.com/rotisserie/eris
 github.com/rs/zerolog
 github.com/rs/zerolog/internal/cbor
 github.com/rs/zerolog/internal/json
+# github.com/stretchr/testify v1.7.0
+## explicit; go 1.13
+# gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
+## explicit; go 1.11
 # gopkg.in/dealancer/validate.v2 v2.1.0
 ## explicit; go 1.11
 gopkg.in/dealancer/validate.v2
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
 gopkg.in/yaml.v2
+# gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+## explicit

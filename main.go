@@ -2,16 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/ihatemodels/pgtools/internal/log"
-	"github.com/ihatemodels/pgtools/pkg/postgres"
+	"github.com/ihatemodels/dumputils/internal/log"
+	"github.com/ihatemodels/dumputils/pkg/postgres"
 	"github.com/rotisserie/eris"
 	"os"
 
-	"github.com/ihatemodels/pgtools/internal/config"
+	"github.com/ihatemodels/dumputils/internal/config"
 )
 
 func main() {
-	if err := config.Init(os.Getenv("PGTOOLS_CONFIG_PATH")); err != nil {
+	if err := config.Init(os.Getenv("DUMPUTILS_CONFIG_PATH")); err != nil {
 		_, err := fmt.Fprintf(os.Stderr, "can not build application config: %v", eris.ToString(err, true))
 		if err != nil {
 			panic(err)
@@ -26,17 +26,19 @@ func main() {
 	log.Infof("pgtools started")
 
 	for _, instance := range config.App.Databases {
+		fmt.Println(instance.ExcludeDatabasesSlice)
 		db := postgres.Database{
-			Name:     instance.Name,
-			Host:     instance.Host,
-			Password: instance.Password,
-			Port:     instance.Port,
-			Username: instance.Username,
-			Database: instance.Database,
-			IsServer: instance.DumpServer,
-			DumpAll:  instance.DumpAll,
-			Version:  instance.Version,
-			Verbose:  instance.Verbose,
+			Name:              instance.Name,
+			Host:              instance.Host,
+			Password:          instance.Password,
+			Port:              instance.Port,
+			Username:          instance.Username,
+			Database:          instance.Database,
+			IsServer:          instance.DumpServer,
+			DumpAll:           instance.DumpAll,
+			Version:           instance.Version,
+			Verbose:           instance.Verbose,
+			ExcludedDatabases: instance.ExcludeDatabasesSlice,
 		}
 
 		if err := db.Dump(); err != nil {

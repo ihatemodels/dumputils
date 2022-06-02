@@ -5,28 +5,30 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/ihatemodels/dumputils/pkg/utils"
 	"os"
 	"os/exec"
 	"strconv"
 	"time"
 
-	"github.com/ihatemodels/pgtools/internal/log"
+	"github.com/ihatemodels/dumputils/internal/log"
 	"github.com/rotisserie/eris"
 
 	_ "github.com/lib/pq"
 )
 
 type Database struct {
-	Name     string
-	Host     string
-	Port     int
-	Database string
-	Username string
-	Password string
-	Version  int
-	IsServer bool
-	DumpAll  bool
-	Verbose  bool
+	Name              string
+	Host              string
+	Port              int
+	Database          string
+	Username          string
+	Password          string
+	Version           int
+	IsServer          bool
+	DumpAll           bool
+	Verbose           bool
+	ExcludedDatabases []string
 
 	connectionString string
 	pgDumpBin        string
@@ -110,25 +112,39 @@ func (d *Database) Dump() error {
 			if err := rows.Scan(&currentDatabase); err != nil {
 				return eris.Wrapf(err, "failed to scan all databases in dumpAll mode for instance: %s", d.Name)
 			}
+
+			if utils.Contains(d.ExcludedDatabases, currentDatabase) {
+				log.Debugf("skipping database: %s in dump_all for instance: %s", currentDatabase, d.Name)
+				continue
+			}
+
 			databases = append(databases, currentDatabase)
 		}
 
 		if err := rows.Err(); err != nil {
-			return eris.Wrapf(err, "failed to scan all databases in dumpAll mode for instance: %s", d.Name)
+			return eris.Wrapf(err, "failed to scan all databases in dumpAll mode in instance: %s", d.Name)
 		}
+
 		rows.Close()
 
-		log.Infof("%v", databases)
+		log.Debugf("starting to dump: %v databases in instance: %s", databases, d.Name)
+
+		for _, db := range databases {
+			if err := d.pgDump(db); err != nil {
+				return eris.Wrapf(err, "failed to pg_dump database: %s in instance: %s", d.Name)
+			}
+		}
+
 	}
 	return nil
 }
 
 // PgDump executes pg_dump with maximum level of compression.
-func (d *Database) PgDump() (string, error) {
+func (d *Database) pgDump(database string) error {
 
-	fileName := fmt.Sprintf("%s-%s-%s.dump", d.Name, d.Database, time.Now().Format("2006-01-02-15-04-05-000000"))
+	fileName := fmt.Sprintf("%s-%s-%s.dump", d.Name, database, time.Now().Format("2006-01-02-15-04-05-000000"))
 
-	args := []string{"-h", d.Host, "-p", strconv.Itoa(d.Port), "-U", d.Username, "-O", "-Fc", "-Z", "9", d.Database, "-f", fileName}
+	args := []string{"-h", d.Host, "-p", strconv.Itoa(d.Port), "-U", d.Username, "-O", "-Fc", "-Z", "9", database, "-f", fileName}
 
 	if d.Verbose {
 		args = append([]string{"-v"}, args...)
@@ -146,14 +162,14 @@ func (d *Database) PgDump() (string, error) {
 	log.Infof("now executing: %s", cmd.String())
 
 	if err := cmd.Run(); err != nil {
-		return "", eris.Wrapf(err, "command %s failed: %s", cmd.String(), out.String())
+		return eris.Wrapf(err, "command %s failed: %s", cmd.String(), out.String())
 	}
 
 	if d.Verbose {
 		log.Infof("output %s", out.String())
 	}
 
-	return out.String(), nil
+	return nil
 }
 
 func (d *Database) PgDumpAll() error {

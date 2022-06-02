@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"gopkg.in/dealancer/validate.v2"
 	"os"
+	"strings"
 
 	"github.com/rotisserie/eris"
 	"gopkg.in/yaml.v2"
 )
 
-var App *Settings
+var App Settings
 
 // Init call's new on App ( the global Settings instance )
 func Init(filePath string) error {
@@ -25,37 +26,59 @@ func Init(filePath string) error {
 }
 
 // New returns validated Settings instance. Errors on file opening and configuration miss sense.
-func New(filePath string) (*Settings, error) {
+func New(filePath string) (Settings, error) {
+	var out Settings
 	if len(filePath) == 0 {
-		return nil, eris.New("internal/config: filePath is empty")
+		return out, eris.New("internal/config: filePath is empty")
 	}
 
 	f, err := os.Open(filePath)
+
 	if err != nil {
-		return nil, eris.Wrap(err, "internal/config: can not open file")
+		return out, eris.Wrap(err, "internal/config: can not open file")
 	}
-	defer func() { _ = f.Close() }()
+
+	defer f.Close()
 
 	d := yaml.NewDecoder(f)
-	var out *Settings
+
 	if err := d.Decode(&out); err != nil {
-		return nil, eris.Wrap(err, "internal/config: can not decode file to yaml struct")
+		return out, eris.Wrap(err, "internal/config: can not decode file to yaml struct")
 	}
 
 	if err := validate.Validate(&out); err != nil {
-		return nil, eris.Wrap(err, "internal/config: the provided configuration is invalid")
+		return out, eris.Wrap(err, "internal/config: the provided configuration is invalid")
 	}
 
-	for _, instance := range out.Databases {
+	for i, instance := range out.Databases {
 		if instance.DumpAll && instance.DumpServer {
-			return nil, eris.New(fmt.Sprintf("internal/config: dumpAll and dumpServer "+
+			return out, eris.New(fmt.Sprintf("internal/config: dumpAll and dumpServer "+
 				"flags can not be used together in database name: %s", instance.Name))
 		}
 		if !instance.DumpAll && !instance.DumpServer {
 			if instance.Database == "" {
-				return nil, eris.New(fmt.Sprintf("internal/config: Database field can not "+
+				return out, eris.New(fmt.Sprintf("internal/config: Database field can not "+
 					"be empty in single dump mode for instance: %s", instance.Name))
 			}
+		}
+
+		if instance.DumpAll {
+
+			// Do not dump the system templates.
+			// See: https://www.postgresql.org/docs/current/manage-ag-templatedbs.html
+			out.Databases[i].ExcludeDatabasesSlice = []string{"template0", "template1"}
+
+			split := strings.Split(instance.ExcludeDatabases, ",")
+
+			if len(split) > 0 {
+				for _, db := range split {
+					out.Databases[i].ExcludeDatabasesSlice = append(
+						out.Databases[i].ExcludeDatabasesSlice,
+						strings.ReplaceAll(db, " ", ""),
+					)
+				}
+			}
+
 		}
 	}
 
@@ -69,16 +92,18 @@ type Settings struct {
 	} `yaml:"log"`
 
 	Databases []struct {
-		Host       string `yaml:"host" validate:"empty=false"`
-		Name       string `yaml:"name" validate:"empty=false"`
-		Port       int    `yaml:"port" validate:"ne=0"`
-		Database   string `yaml:"database"`
-		Username   string `yaml:"username" validate:"empty=false"`
-		Password   string `yaml:"password" validate:"empty=false"`
-		Version    int    `yaml:"version"  validate:"one_of=10,11,12,13,14"`
-		Verbose    bool   `yaml:"verbose"`
-		DumpAll    bool   `yaml:"dumpAll"`
-		DumpServer bool   `yaml:"dumpServer"`
+		Host                  string `yaml:"host" validate:"empty=false"`
+		Name                  string `yaml:"name" validate:"empty=false"`
+		Port                  int    `yaml:"port" validate:"ne=0"`
+		Database              string `yaml:"database"`
+		Username              string `yaml:"username" validate:"empty=false"`
+		Password              string `yaml:"password" validate:"empty=false"`
+		Version               int    `yaml:"version"  validate:"one_of=10,11,12,13,14"`
+		Verbose               bool   `yaml:"verbose"`
+		DumpAll               bool   `yaml:"dumpAll"`
+		ExcludeDatabases      string `yaml:"excludeDatabases"`
+		ExcludeDatabasesSlice []string
+		DumpServer            bool `yaml:"dumpServer"`
 	} `yaml:"databases"`
 
 	Outputs struct {

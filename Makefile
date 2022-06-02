@@ -1,9 +1,11 @@
-.EXPORT_ALL_VARIABLES:
-
-PGTOOLS_CONFIG_PATH = local.config.yaml
+.DEFAULT_GOAL := run
 COMMIT_MESSAGE=" - commit message"
 
-run-local:
+.EXPORT_ALL_VARIABLES:
+
+DUMPUTILS_CONFIG_PATH = test.config.yaml
+
+run:
 	go run main.go
 
 run-docker:

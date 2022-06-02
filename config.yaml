@@ -19,7 +19,7 @@ databases:
     dumpAll: false
     dumpServer: false
 
-  # dump all database in separate dumps
+  # dump all databases in separate dumps
   - name: "sales-reporting-west"
     host: 192.168.1.3
     port: 5432
@@ -30,6 +30,10 @@ databases:
     # this will dump all databases in separate
     # files using the pg_dump bin
     dumpAll: true
+    # comma separated databases names to exclude from dumping
+    # works only when dumpAll: true
+    excludeDatabases: "sales_west, sales_reporting"
+
     dumpServer: false
 
   # dump the whole server
