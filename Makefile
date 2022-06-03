@@ -9,8 +9,8 @@ run:
 	go run main.go
 
 run-docker:
-	docker build -f dev.Dockerfile -t pgtools:local .
-	docker run --rm --name dev-pgtools -h pgtools-local -it -v ./container:/opt/container pgtools:local /bin/bash
+	docker build -f dev.Dockerfile -t dumputils:local .
+	docker run --rm --name dumputils:local -h dumputils-local -it -v ./container:/opt/container dumputils:local /bin/bash
 
 clean-commit:
 	go clean

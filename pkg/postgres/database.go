@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/ihatemodels/dumputils/pkg/notifiers"
 	"github.com/ihatemodels/dumputils/pkg/utils"
 	"os"
 	"os/exec"
@@ -29,10 +30,10 @@ type Database struct {
 	DumpAll           bool
 	Verbose           bool
 	ExcludedDatabases []string
-
-	connectionString string
-	pgDumpBin        string
-	pgDumpAllBin     string
+	Notifiers         []notifiers.Notifier
+	connectionString  string
+	pgDumpBin         string
+	pgDumpAllBin      string
 }
 
 const binPath = "/usr/lib/postgresql/%d/bin/%s"

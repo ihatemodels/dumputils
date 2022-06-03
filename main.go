@@ -19,14 +19,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	if config.App.Log.Type == "human" {
-		log.SetHumanLogger(config.App.Log.Level)
-	}
+	log.Configure()
 
-	log.Infof("pgtools started")
+	log.Infof("dumputils started")
 
 	for _, instance := range config.App.Databases {
-		fmt.Println(instance.ExcludeDatabasesSlice)
 		db := postgres.Database{
 			Name:              instance.Name,
 			Host:              instance.Host,
