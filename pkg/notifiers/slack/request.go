@@ -23,9 +23,22 @@
  *
  */
 
-package dump
+package slack
 
-type Target interface {
-	Dump() error
-	Probe() error
+type request struct {
+	Channel string  `json:"channel"`
+	Text    string  `json:"text"`
+	Blocks  []block `json:"blocks"`
+}
+
+type block struct {
+	Type string `json:"type"`
+	Text struct {
+		Type string `json:"type"`
+		Text string `json:"text"`
+	} `json:"text,omitempty"`
+	Fields []struct {
+		Type string `json:"type"`
+		Text string `json:"text"`
+	} `json:"fields,omitempty"`
 }

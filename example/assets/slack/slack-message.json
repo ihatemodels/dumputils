@@ -1,0 +1,33 @@
+{
+  "channel":"test",
+  "text": "DumpUtils Notification",
+  "blocks": [
+    {
+      "type": "header",
+      "text": {
+        "type": "plain_text",
+        "text": ":relieved: DumpUtils: backup Created Successfully"
+      }
+    },
+    {
+      "type":"section",
+      "text":{
+        "type":"mrkdwn",
+        "text": "This backup took 1h to run. Dumped objects: [sales, sales_reporting, orders]."
+      }
+    },
+    {
+      "type": "section",
+      "fields": [
+        {
+          "type": "mrkdwn",
+          "text": "*Type:*\nPostgresSQL Dump All Databases"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Created at:*\n 2022-12-02 15:34:12"
+        }
+      ]
+    }
+  ]
+}

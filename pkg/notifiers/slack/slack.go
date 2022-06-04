@@ -23,9 +23,41 @@
  *
  */
 
-package dump
+package slack
 
-type Target interface {
-	Dump() error
-	Probe() error
+import (
+	"github.com/ihatemodels/dumputils/pkg/notifiers"
+	"net/http"
+	"time"
+)
+
+// Notifier implements a notifiers.Notifier for Slack notifications.
+type Notifier struct {
+	client         *http.Client
+	token          string
+	channel        string
+	defaultPayload request
+}
+
+func New(token string, channel string) (*Notifier, error) {
+	return &Notifier{
+		client: &http.Client{
+			Timeout: 3 * time.Second,
+		},
+		token:   token,
+		channel: channel,
+		defaultPayload: request{
+			Channel: channel,
+			Text:    "DumpUtils Notification",
+		},
+	}, nil
+}
+
+func (n *Notifier) Notify(state notifiers.NotificationState) error {
+	payload := n.defaultPayload
+
+	payload.Blocks = append(payload.Blocks, block{
+		Type: "header",
+	})
+	return nil
 }

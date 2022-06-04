@@ -74,3 +74,5 @@ notifiers:
     enabled: true
   slack:
     enabled: true
+    botToken: "xoxb-not-a-real-token-this-will-not-work"
+    channel: dumputils_alerts

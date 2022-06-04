@@ -178,3 +178,4 @@ local.config.yaml
 .devcontainer
 container/
 test.config.yaml
+example/assets/slack/.curl.sh
