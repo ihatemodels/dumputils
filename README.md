@@ -1,7 +1,8 @@
 ## Welcome to Dump Utils 
 
-**`IT is NOT 🚀 blazing-fast but still works!`**
+# Under development and ready to use!
 
+**`IT is NOT 🚀 blazing-fast but still works!`**
 
 This projects aims to pack and abstract the usage of all common dump utils such as all recent versions of `pg_dump & pg_dumpall` , `mysqldump`, `mongodump` and more in a single docker container. The goal is to provide orchestration (using Kubernetes) and observability of different backup procedures while still simple to use and configure.
 
@@ -24,7 +25,9 @@ Replication handles many error cases but by far not all. What about an admin tha
 
 ## Features
 
-1. **Clean Documentation**
+1. **Clean Documentation** 
+   - [x] [How To Install Outside Docker](docs/INSTALL.md)
+   - [x] [Restore Procedures](docs/RESTORE.md)
 2. **Base Container to use manually for dump/restore procedures**
 3. **Orchestration Strategies Using Kubernetes** 
 4. **Supported Dump Targets**

@@ -7,13 +7,14 @@ This document refers to the installation steps of all related tools and the proj
 - Postgres Tools
 
 ```bash
-# Install Base Utils
+# Install base utils
 sudo apt-get update -y
 sudo apt-get install -y --no-install-recommends curl gpg gnupg2 software-properties-common apt-transport-https ca-certificates
-# Add Postgres Repositories
+
+# Add Postgres repositories
 curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
 
-# Install Postgres Binaries
+# Install Postgres binaries
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends \
       postgresql-client-10 postgresql-client-11 \

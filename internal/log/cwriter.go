@@ -66,7 +66,7 @@ func colorize(color int, v string) string {
 }
 
 // Write -
-// This code is copied from zerolog.ConsoleWriter
+// This code is copied and modified from zerolog.ConsoleWriter
 func (w *consoleWriter) Write(p []byte) (n int, err error) {
 	var buf = consoleBufPool.Get().(*bytes.Buffer)
 	defer func() {
