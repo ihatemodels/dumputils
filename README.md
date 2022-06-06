@@ -1,6 +1,6 @@
 ## Welcome to Dump Utils 
 
-# Under development and ready to use!
+# Under development and not ready to use!
 
 **`IT is NOT 🚀 blazing-fast but still works!`**
 
@@ -34,11 +34,12 @@ Replication handles many error cases but by far not all. What about an admin tha
     - [x] PostgresSQL version 10,11,12,13,14
       - [x] Dump Single Database
       - [x] Dump All Databases In Different dump files
-      - [ ] Dump The Whole Server with `pg_dumpall`
+      - [x] Dump The Whole Server with `pg_dumpall`
     - [ ] MariaDB 
     - [ ] MongoDB
     - [ ] Kafka Topics
     - [ ] Cassandra
+    - [ ] Redis
 5. **Supported Outputs**
     - [ ] Local Filesystem
     - [ ] S3 Compatible Storage System
