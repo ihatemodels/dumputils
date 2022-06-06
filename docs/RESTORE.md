@@ -2,7 +2,7 @@
 
 This document refers to techniques that must be used to restore backup's created with `dumputils`
 
-- **Postgres Single Database** 
+### **Postgres Single Database** 
 
 In this example we will backup the `sales` database from server 192.168.1.3 and later restore it on database `sales_new` in server 192.168.1.6
 
@@ -46,3 +46,5 @@ Password: # Enter the postgres user password here
 root@dumputils: cd /opt/backups
 root@dumputils: /usr/lib/postgresql/14/bin/pg_restore -h 192.168.1.6 -p 5432 -U postgres -d sales_new sales-east-sales-2022-04-16-14-45-09.dump
 ```
+
+### **Postgres Server**
