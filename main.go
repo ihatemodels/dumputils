@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022.  Dumputils Authors
+ * Copyright (c) 2022. 	Dumputils Authors
  *
  * https://opensource.org/licenses/MIT
  *
