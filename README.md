@@ -2,6 +2,7 @@
 
 **`IT is NOT 🚀 blazing-fast but still works!`**
 
+
 This projects aims to pack and abstract the usage of all common dump utils such as all recent versions of `pg_dump & pg_dumpall` , `mysqldump`, `mongodump` and more in a single docker container. The goal is to provide orchestration (using Kubernetes) and observability of different backup procedures while still simple to use and configure.
 
 **<p style='color:orange'>WARN:</p> This tool can NOT be used as a standalone software without the proper binaries like `pg_dump`, `mysqldump`, etc... The docker containers used in the examples contains all you need. If you want to use this tool in Virtual Machines or other Environments you can follow the installation steps explained in [TOOLS.md](docs/tools.md)** 

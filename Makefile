@@ -10,7 +10,7 @@ run:
 
 run-docker:
 	docker build -f dev.Dockerfile -t dumputils:local .
-	docker run --rm --name dumputils:local -h dumputils-local -it -v ./container:/opt/container dumputils:local /bin/bash
+	docker run --rm --name dumputils-local -h dumputils-local -it -v ./container:/opt/container dumputils:local /bin/bash
 
 clean-commit:
 	go clean

@@ -19,7 +19,7 @@ databases:
     dumpAll: false
     dumpServer: false
 
-  # dump all databases in separate dumps
+  # dump all databases in separate dumps example
   - name: "sales-reporting-west"
     host: 192.168.1.3
     port: 5432
@@ -31,15 +31,16 @@ databases:
     # files using the pg_dump bin
     dumpAll: true
     # comma separated databases names to exclude from dumping
-    # works only when dumpAll: true
+    # works only when dumpAll is set to true
     excludeDatabases: "sales_west, sales_reporting"
 
     dumpServer: false
 
-  # dump the whole server
+  # dump the whole server example
   - name: "sales-server-west"
     host: 192.168.1.3
     port: 5432
+
     username: postgres
     password: postgres
     version: 11
@@ -74,5 +75,10 @@ notifiers:
     enabled: true
   slack:
     enabled: true
+    # if this flag is true notifications
+    # will be sent not only on failures
+    # but on successful backups as well
+    verbose: true
     botToken: "xoxb-not-a-real-token-this-will-not-work"
     channel: dumputils_alerts
+

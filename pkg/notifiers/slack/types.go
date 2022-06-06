@@ -25,20 +25,37 @@
 
 package slack
 
+const (
+	failedHeader     = ":relieved: DumpUtils -> backup failed to create"
+	succsefullHeader = ":relieved: DumpUtils -> backup created successfully"
+)
+
 type request struct {
-	Channel string  `json:"channel"`
-	Text    string  `json:"text"`
-	Blocks  []block `json:"blocks"`
+	Channel string   `json:"channel"`
+	Text    string   `json:"text"`
+	Blocks  []blocks `json:"blocks"`
+}
+type text struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
+}
+type fields struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
+}
+type blocks struct {
+	Type   string    `json:"type"`
+	Text   *text     `json:"text,omitempty"`
+	Fields *[]fields `json:"fields,omitempty"`
 }
 
-type block struct {
-	Type string `json:"type"`
-	Text struct {
-		Type string `json:"type"`
-		Text string `json:"text"`
-	} `json:"text,omitempty"`
-	Fields []struct {
-		Type string `json:"type"`
-		Text string `json:"text"`
-	} `json:"fields,omitempty"`
+type response struct {
+	Ok               bool     `json:"ok"`
+	Error            string   `json:"error"`
+	Errors           []string `json:"errors"`
+	Warning          string   `json:"warning"`
+	ResponseMetadata struct {
+		Messages []string `json:"messages"`
+		Warnings []string `json:"warnings"`
+	} `json:"response_metadata"`
 }

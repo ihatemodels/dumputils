@@ -27,12 +27,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/ihatemodels/dumputils/internal/config"
 	"github.com/ihatemodels/dumputils/internal/log"
 	"github.com/ihatemodels/dumputils/pkg/postgres"
 	"github.com/rotisserie/eris"
 	"os"
-
-	"github.com/ihatemodels/dumputils/internal/config"
 )
 
 func main() {
@@ -46,7 +45,27 @@ func main() {
 
 	log.Configure()
 
-	log.Infof("dumputils started")
+	log.Infof("dumputils: configuration validated")
+
+	//var notifierChannels []notifiers.Notifier
+	//
+	//if config.App.Notifiers.Slack.Enabled {
+	//	slackNotifier, err := slack.New(config.App.Notifiers.Slack.BotToken, config.App.Notifiers.Slack.Channel)
+	//	if err != nil {
+	//		log.Errorf(err, "slack notifier failed to initialize")
+	//	} else {
+	//		notifierChannels = append(notifierChannels, slackNotifier)
+	//		err := slackNotifier.Notify(notifiers.Input{
+	//			InstanceName: "test",
+	//			InstanceType: "PostgreSQL test",
+	//			Duration:     1 * time.Hour,
+	//			State:        notifiers.Failed,
+	//		})
+	//		if err != nil {
+	//			log.Errorf(err, "notifier failed to send notification")
+	//		}
+	//	}
+	//}
 
 	for _, instance := range config.App.Databases {
 		db := postgres.Database{
@@ -56,7 +75,7 @@ func main() {
 			Port:              instance.Port,
 			Username:          instance.Username,
 			Database:          instance.Database,
-			IsServer:          instance.DumpServer,
+			DumpServer:        instance.DumpServer,
 			DumpAll:           instance.DumpAll,
 			Version:           instance.Version,
 			Verbose:           instance.Verbose,
@@ -64,7 +83,7 @@ func main() {
 		}
 
 		if err := db.Dump(); err != nil {
-			log.Errorf(err, "failed to dump database with name %s and host %s", instance.Name, instance.Host)
+			log.Errorf(err, "failed to dump instance %s running on host %s", instance.Name, instance.Host)
 			continue
 		}
 	}

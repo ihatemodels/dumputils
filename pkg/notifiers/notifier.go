@@ -25,13 +25,36 @@
 
 package notifiers
 
+import "time"
+
+// NotificationState is the state of the notification. Failed|Succeeded
 type NotificationState int
 
 const (
-	Fail NotificationState = iota
-	Success
+	Failed NotificationState = iota
+	Succeeded
 )
 
+// Input is the data that the Notifier will use to format the notification text.
+type Input struct {
+	// InstanceName where the notification belongs
+	InstanceName string
+
+	// InstanceType
+	InstanceType string
+
+	// Should we sent notification if the State is Succeeded
+	Verbose bool
+
+	// Duration that this dump took to run
+	Duration time.Duration
+	State    NotificationState
+
+	// ErrorDetails if any and State is Failed
+	ErrorDetails string
+}
+
+// Notifier is the interface that every notification channel must implement.
 type Notifier interface {
-	Notify(state NotificationState) error
+	Notify(in Input) error
 }

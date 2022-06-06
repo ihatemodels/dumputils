@@ -37,7 +37,7 @@ import (
 
 var App Settings
 
-// Init call's new on App ( the global Settings instance )
+// Init will initialize App ( the global Settings instance )
 func Init(filePath string) error {
 	var err error
 
@@ -103,7 +103,6 @@ func New(filePath string) (Settings, error) {
 					)
 				}
 			}
-
 		}
 	}
 
@@ -163,6 +162,7 @@ type Settings struct {
 			SendOnSuccess bool   `yaml:"sendOnSuccess"`
 		} `yaml:"email"`
 		Slack struct {
+			Verbose       bool   `yaml:"verbose"`
 			Enabled       bool   `yaml:"enabled"`
 			BotToken      string `yaml:"botToken" validate:"empty=false"`
 			Channel       string `yaml:"channel"  validate:"empty=false"`
