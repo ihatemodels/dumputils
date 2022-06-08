@@ -1,5 +1,5 @@
 {
-  "channel":"test",
+  "channel": "test",
   "text": "DumpUtils Notification",
   "blocks": [
     {
@@ -10,9 +10,9 @@
       }
     },
     {
-      "type":"section",
-      "text":{
-        "type":"mrkdwn",
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
         "text": "This backup took 1h to run. Dumped objects: [sales, sales_reporting, orders]."
       }
     },

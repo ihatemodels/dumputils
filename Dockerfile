@@ -1,8 +1,7 @@
 FROM ihatemodels1/dumputils-base:latest
 WORKDIR /builder
 COPY . ./
-RUN mkdir -p /tmp/ && \
-    GOOS=linux go build -v -mod=vendor -o pgtools ./
+RUN mkdir -p /tmp/ && GOOS=linux go build -v -mod=vendor -o pgtools ./
 
 WORKDIR /app/
 RUN cp /builder/pgtools . && \

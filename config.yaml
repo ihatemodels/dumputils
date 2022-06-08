@@ -7,6 +7,7 @@ log:
 databases:
   # dump single database example
   - name: "sales-east"
+    enabled: true
     host: 192.168.1.3
     port: 5432
     database: sales
@@ -21,6 +22,7 @@ databases:
 
   # dump all databases in separate dumps example
   - name: "sales-reporting-west"
+    enabled: true
     host: 192.168.1.3
     port: 5432
     username: postgres
@@ -38,6 +40,7 @@ databases:
 
   # dump the whole server example
   - name: "sales-server-west"
+    enabled: true
     host: 192.168.1.3
     port: 5432
 
@@ -51,6 +54,11 @@ databases:
 
 # configure where to store generated backup files
 output:
+  # This is the base directory used
+  # as temporary storage when backups are created.
+  # Created files will be deleted after termination.
+  # The user which start dumputils must have write permissions.
+  tmpDir: /opt/backups
   minio:
     enabled: true
     endpoint: "minio.local"
@@ -66,8 +74,7 @@ output:
     directory: /home/user/backups
   filesystem:
     enabled: true
-    # the user which starts pgtools must have write access
-    # to this destination
+    # The user which starts dumputils must have write permissions to this destination.
     path: /opt/backups/
 
 notifiers:

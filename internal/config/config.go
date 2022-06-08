@@ -35,22 +35,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var App Settings
-
-// Init will initialize App ( the global Settings instance )
-func Init(filePath string) error {
-	var err error
-
-	App, err = New(filePath)
-
-	if err != nil {
-		return eris.Wrap(err, "global config failed to initialize")
-	}
-
-	return nil
-}
-
-// New returns validated Settings instance. Errors on file opening and configuration miss sense.
+// New returns validated Settings instance. Errors on file opening or configuration miss sense.
 func New(filePath string) (Settings, error) {
 	var out Settings
 	if len(filePath) == 0 {
@@ -117,6 +102,7 @@ type Settings struct {
 
 	Databases []struct {
 		Host                  string `yaml:"host" validate:"empty=false"`
+		Enabled               bool   `yaml:"enabled"`
 		Name                  string `yaml:"name" validate:"empty=false"`
 		Port                  int    `yaml:"port" validate:"ne=0"`
 		Database              string `yaml:"database"`
@@ -131,7 +117,8 @@ type Settings struct {
 	} `yaml:"databases"`
 
 	Outputs struct {
-		Minio struct {
+		TmpDir string `yaml:"tmpDir" validate:"empty=false"`
+		Minio  struct {
 			Enabled         bool   `yaml:"enabled"`
 			Endpoint        string `yaml:"endpoint"`
 			AccessKeyID     string `yaml:"accessKeyID"`

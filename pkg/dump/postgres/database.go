@@ -26,6 +26,7 @@
 package postgres
 
 import (
+	"bufio"
 	"bytes"
 	"database/sql"
 	"errors"
@@ -61,6 +62,8 @@ type Database struct {
 }
 
 const binPath = "/usr/lib/postgresql/%d/bin/%s"
+
+var ErrCanNotDeleteFile = eris.New("can not delete uncompressed file in pg_dumpall")
 
 func (d *Database) buildConnectionString() {
 	d.connectionString = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s",
@@ -224,21 +227,32 @@ func (d *Database) pgDumpServer() error {
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("PGPASSWORD=%s", d.Password))
 
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &out
+	// capture only stderr cuz pgtools outputs there always
+	stderr, err := cmd.StderrPipe()
 
-	log.Infof("now executing: %s", cmd.String())
+	if err != nil {
+		return eris.Wrapf(err, "command %s failed: %s", cmd.String())
+	}
 
-	if err := cmd.Run(); err != nil {
-		return eris.Wrapf(err, "command %s failed: %s", cmd.String(), out.String())
+	if err := cmd.Start(); err != nil {
+		return eris.Wrapf(err, "command %s failed: %s", cmd.String())
 	}
 
 	if d.Verbose {
-		text := strings.Split(out.String(), "\n")
-		for _, line := range text {
-			log.Infof("pg_dumpall: %s", line)
+		scanner := bufio.NewScanner(stderr)
+		for scanner.Scan() {
+			log.Infof("pg_dumpall: %s", scanner.Text())
 		}
 	}
+
+	if err := utils.Gzip(fileName); err != nil {
+		return eris.Wrapf(err, "can not compress file: %s", fileName)
+	}
+
+	if err := os.Remove(fileName); err != nil {
+		return ErrCanNotDeleteFile
+	}
+	_ = cmd.Wait()
+
 	return nil
 }

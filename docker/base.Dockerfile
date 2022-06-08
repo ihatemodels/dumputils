@@ -5,7 +5,7 @@ LABEL maintainer="ihatemodels1@proton.me"
 # Install Base Packages
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
-    curl gpg gnupg2 software-properties-common apt-transport-https ca-certificates
+    curl wget gpg gnupg2 software-properties-common apt-transport-https ca-certificates
 
 # Add PostgreSQL Repositories
 RUN cd /tmp/ && \
@@ -15,10 +15,13 @@ RUN cd /tmp/ && \
     echo "deb [arch=amd64,arm64,ppc64el] https://ftp.ubuntu-tw.org/mirror/mariadb/repo/10.6/debian bullseye main" | tee /etc/apt/sources.list.d/mariadb.list && \
     apt-get update -y && \
     apt-get install -y --no-install-recommends \
-      postgresql-client-10 postgresql-client-11 \
-      postgresql-client-12 postgresql-client-13 postgresql-client-14 \
-      mariadb-client && \
-    # install minio
+        postgresql-client-10 postgresql-client-11 \
+        postgresql-client-12 postgresql-client-13 postgresql-client-14 \
+        mariadb-client && \
+    # install minio client
     wget https://dl.min.io/client/mc/release/linux-amd64/mc && \
     mv mc /usr/local/bin/mc && chmod +x /usr/local/bin/mc && \
+    # install mongo tools
+    wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-debian10-x86_64-100.5.2.deb -O mongo-tools.deb && \
+    dpkg -i mongo-tools.deb && \
     rm -rf /tmp/*

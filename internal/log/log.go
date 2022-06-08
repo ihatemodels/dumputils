@@ -27,7 +27,6 @@
 package log
 
 import (
-	"github.com/ihatemodels/dumputils/internal/config"
 	"github.com/rotisserie/eris"
 	"github.com/rs/zerolog"
 	"os"
@@ -40,10 +39,10 @@ var logger = zerolog.New(os.Stdout).
 	Timestamp().
 	Logger()
 
-func Configure() {
-	if config.App.Log.Type == "human" {
+func Init(level string, logType string) {
+	if logType == "human" {
 		cWriter := &consoleWriter{
-			level: getLogLevel(config.App.Log.Level),
+			level: getLogLevel(level),
 			out:   os.Stdout,
 		}
 		logger = zerolog.New(cWriter).
@@ -51,7 +50,7 @@ func Configure() {
 			Timestamp().
 			Logger()
 	} else {
-		zerolog.SetGlobalLevel(getLogLevel(config.App.Log.Level))
+		zerolog.SetGlobalLevel(getLogLevel(level))
 	}
 }
 

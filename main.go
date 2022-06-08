@@ -27,15 +27,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/ihatemodels/dumputils/internal/config"
-	"github.com/ihatemodels/dumputils/internal/log"
-	"github.com/ihatemodels/dumputils/pkg/postgres"
+	"github.com/ihatemodels/dumputils/cmd/dumputils"
 	"github.com/rotisserie/eris"
 	"os"
 )
 
 func main() {
-	if err := config.Init(os.Getenv("DUMPUTILS_CONFIG_PATH")); err != nil {
+	if err := dumputils.Run(); err != nil {
 		_, err := fmt.Fprintf(os.Stderr, "can not build application config: %v", eris.ToString(err, true))
 		if err != nil {
 			panic(err)
@@ -43,48 +41,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Configure()
-
-	log.Infof("dumputils: configuration validated")
-
-	//var notifierChannels []notifiers.Notifier
-	//
-	//if config.App.Notifiers.Slack.Enabled {
-	//	slackNotifier, err := slack.New(config.App.Notifiers.Slack.BotToken, config.App.Notifiers.Slack.Channel)
-	//	if err != nil {
-	//		log.Errorf(err, "slack notifier failed to initialize")
-	//	} else {
-	//		notifierChannels = append(notifierChannels, slackNotifier)
-	//		err := slackNotifier.Notify(notifiers.Input{
-	//			InstanceName: "test",
-	//			InstanceType: "PostgreSQL test",
-	//			Duration:     1 * time.Hour,
-	//			State:        notifiers.Failed,
-	//		})
-	//		if err != nil {
-	//			log.Errorf(err, "notifier failed to send notification")
-	//		}
-	//	}
-	//}
-
-	for _, instance := range config.App.Databases {
-		db := postgres.Database{
-			Name:              instance.Name,
-			Host:              instance.Host,
-			Password:          instance.Password,
-			Port:              instance.Port,
-			Username:          instance.Username,
-			Database:          instance.Database,
-			DumpServer:        instance.DumpServer,
-			DumpAll:           instance.DumpAll,
-			Version:           instance.Version,
-			Verbose:           instance.Verbose,
-			ExcludedDatabases: instance.ExcludeDatabasesSlice,
-		}
-
-		if err := db.Dump(); err != nil {
-			log.Errorf(err, "failed to dump instance %s running on host %s", instance.Name, instance.Host)
-			continue
-		}
-	}
+	os.Exit(0)
 }

@@ -1,10 +1,11 @@
-## Restore 
+## Restore
 
 This document refers to techniques that must be used to restore backup's created with `dumputils`
 
-### **Postgres Single Database** 
+### **Postgres Single Database**
 
-In this example we will backup the `sales` database from server 192.168.1.3 and later restore it on database `sales_new` in server 192.168.1.6
+In this example we will backup the `sales` database from server 192.168.1.3 and later restore it on database `sales_new`
+in server 192.168.1.6
 
 - Used **dumputils** config
 
@@ -48,3 +49,32 @@ root@dumputils: /usr/lib/postgresql/14/bin/pg_restore -h 192.168.1.6 -p 5432 -U 
 ```
 
 ### **Postgres Server**
+
+### **Using the container as Backup-Restore environment**
+
+- Run the container
+
+```bash
+docker run --rm --name dumputils -h dumputils -it ihatemodels1/dumputils-base:latest /bin/bash
+```
+
+- Create backup
+
+```bash
+root@dumputils: /usr/lib/postgresql/14/bin/pg_dump -h 192.168.1.5 -p 5432 -U postgres -Fc -Z 9 sales -f sales.dump
+```
+
+- Upload it to `minio`
+
+```bash
+root@dumputils: mc alias set minio-onprem http://192.168.1.51 {access_key} {secret_key}
+# optionally create bucker
+root@dumputils: mc mb minio-onprem/mybucket
+root@dumputils: mc cp sales.dump minio-onprem/mybucket
+```
+
+- Restore it on other server
+
+```bash
+root@dumputils: /usr/lib/postgresql/14/bin/pg_restore -h 192.168.1.6 -p 5432 -U postgres -d sales_old sales.dump
+```

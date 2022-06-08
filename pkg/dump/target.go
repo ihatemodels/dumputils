@@ -25,6 +25,35 @@
 
 package dump
 
+type Input struct {
+	DestinationDir string
+	Binaries       BinPaths
+}
+
+type BinPaths struct {
+	PgTools10 string
+	PgTools11 string
+	PgTools12 string
+	PgTools13 string
+	PgTools14 string
+
+	MySQLDump string
+	MongoDump string
+}
+
+func NewPaths() BinPaths {
+	return BinPaths{
+		PgTools10: "/usr/lib/postgresql/10/bin/",
+		PgTools11: "/usr/lib/postgresql/11/bin/",
+		PgTools12: "/usr/lib/postgresql/12/bin/",
+		PgTools13: "/usr/lib/postgresql/13/bin/",
+		PgTools14: "/usr/lib/postgresql/14/bin/",
+
+		MySQLDump: "/usr/bin/mysqldump",
+		MongoDump: "/usr/bin/mongodump",
+	}
+}
+
 type Target interface {
 	Dump() error
 	Probe() error

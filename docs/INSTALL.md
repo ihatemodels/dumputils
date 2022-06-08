@@ -1,6 +1,7 @@
-## Install 
+## Install
 
-This document refers to the installation steps of all related tools and the project itself if you want to use it outside docker, or you want to build your own containers.
+This document refers to the installation steps of all related tools and the project itself if you want to use it outside
+docker, or you want to build your own containers.
 
 ### Ubuntu / Debian based distros
 
